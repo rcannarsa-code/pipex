@@ -6,7 +6,7 @@
 /*   By: rcannars <rcannars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:00:21 by rcannars          #+#    #+#             */
-/*   Updated: 2025/02/05 15:51:24 by rcannars         ###   ########.fr       */
+/*   Updated: 2025/02/21 14:36:17 by rcannars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,13 @@ void	parse_args(t_pipex *pipex, int argc, char **argv, char **envp)
 	{
 		pipex->infile = open(argv[1], O_RDONLY);
 		if (pipex->infile < 0)
-			error_exit("Input file error");
+		{
+			ft_putstr_fd("Input file error\n", 2);
+			argv[1] = NULL;
+			argv[2] = "echo -n";
+			//error_exit(char *msg);
+			//exit(1);
+		}
 	}
 	if (pipex->here_doc)
 		pipex->outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND,
@@ -66,10 +72,18 @@ void	parse_args(t_pipex *pipex, int argc, char **argv, char **envp)
 		pipex->outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC,
 				0644);
 	if (pipex->outfile < 0)
+	{
 		error_exit("Output file error");
+		exit(1);
+	}
 	while (i < pipex->cmd_count)
 	{
 		pipex->cmd_args[i] = ft_split(argv[i + start], ' ');
+		if (!pipex->cmd_args[i] || !pipex->cmd_args[i][0])
+		{
+			ft_putstr_fd("Empty command\n", 2);
+			exit(1);
+		}
 		pipex->cmd_paths[i] = get_cmd_path(pipex->cmd_args[i][0], envp);
 		i++;
 	}
