@@ -12,7 +12,77 @@
 
 #include "../include/pipex.h"
 
+static void	setup_pipes(t_pipex *pipex, int i)
+{
+	if (i == 0)
+	{
+		dup2(pipex->infile, STDIN_FILENO);
+		dup2(pipex->pipe[1], STDOUT_FILENO);
+	}
+	else if (i == pipex->cmd_count - 1)
+	{
+		dup2(pipex->pipe[2 * i - 2], STDIN_FILENO);
+		dup2(pipex->outfile, STDOUT_FILENO);
+	}
+	else
+	{
+		dup2(pipex->pipe[2 * i - 2], STDIN_FILENO);
+		dup2(pipex->pipe[2 * i + 1], STDOUT_FILENO);
+	}
+}
+
+static void	close_all_pipes(t_pipex *pipex)
+{
+	int	j;
+
+	j = 0;
+	while (j < (pipex->cmd_count - 1) * 2)
+		close(pipex->pipe[j++]);
+	close(pipex->infile);
+	close(pipex->outfile);
+}
+
 static void	child_process(t_pipex *pipex, int i, char **envp)
+{
+	setup_pipes(pipex, i);
+	close_all_pipes(pipex);
+	execve(pipex->cmd_paths[i], pipex->cmd_args[i], envp);
+	error_exit("Command execution failed");
+	exit(127);
+}
+
+void	execute_commands(t_pipex *pipex, char **envp)
+{
+	int	i;
+	int	status;
+
+	i = 0;
+	while (i < pipex->cmd_count - 1)
+		if (pipe(pipex->pipe + 2 * i++) < 0)
+			error_exit("Pipe creation failed");
+
+	i = 0;
+	while (i < pipex->cmd_count)
+	{
+		pipex->pids[i] = fork();
+		if (pipex->pids[i] < 0)
+			error_exit("Fork failed");
+		if (pipex->pids[i] == 0)
+			child_process(pipex, i, envp);
+		i++;
+	}
+	close_all_pipes(pipex);
+	i = 0;
+	while (i < pipex->cmd_count)
+		waitpid(pipex->pids[i++], &status, 0);
+}
+
+
+
+
+
+
+/* static void	child_process(t_pipex *pipex, int i, char **envp)
 {
 	int	j;
 
@@ -42,7 +112,7 @@ static void	child_process(t_pipex *pipex, int i, char **envp)
 	execve(pipex->cmd_paths[i], pipex->cmd_args[i], envp);
 	error_exit("Command execution failed");
 	exit(127);
-}
+} */
 
 /* void	execute_commands(t_pipex *pipex, char **envp)
 {
@@ -80,7 +150,7 @@ static void	child_process(t_pipex *pipex, int i, char **envp)
 }
  */
 
- void	execute_commands(t_pipex *pipex, char **envp)
+/*  void	execute_commands(t_pipex *pipex, char **envp)
 {
 	int	i;
 	int	status;
@@ -124,4 +194,4 @@ static void	child_process(t_pipex *pipex, int i, char **envp)
 		}
 		i++;
 	}
-}
+} */

@@ -12,6 +12,31 @@
 
 #include "../include/pipex.h"
 
+void	close_pipes(int *pipes, int count)
+{
+	int		 i;
+
+	i = 0;
+	while (i < count)
+	{
+		close(pipes[i]);
+		i++;
+	}
+}
+
+void	free_pipex(t_pipex *pipex)
+{
+	if (pipex->cmd_paths)
+		free_array(pipex->cmd_paths);
+	if (pipex->cmd_args)
+		free_array(pipex->cmd_args);
+	if (pipex->pipe)
+		free(pipex->pipe);
+	if (pipex->pids)
+		free(pipex->pids);
+}
+
+
 void	error_exit(char *msg)
 {
 	ft_putstr_fd(msg, 2);
@@ -29,7 +54,7 @@ void	free_array(char **arr)
 	free(arr);
 }
 
-void	cleanup_pipex(t_pipex *pipex)
+/* void	cleanup_pipex(t_pipex *pipex)
 {
 	int	i;
 
@@ -56,7 +81,7 @@ void	cleanup_pipex(t_pipex *pipex)
 	}
 	close(pipex->infile);
 	close(pipex->outfile);
-}
+} */
 
 void	handle_here_doc(t_pipex *pipex, char *limiter)
 {
