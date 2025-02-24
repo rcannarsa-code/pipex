@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rcannars <rcannars@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: rcannars <rcannars@student.42.fr>          +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2024/12/21 17:54:22 by rcannars          #+#    #+#             */
 /*   Updated: 2024/12/22 11:41:03 by rcannars         ###   ########.fr       */
 /*                                                                            */
@@ -37,7 +40,7 @@ char	*join_buffer(char *joined, char *buffer, ssize_t bytes_read)
 
 char	*read_and_join(char *stash, int fd)
 {
-	char	*buffer;//[BUFFER_SIZE + 1]
+	char	*buffer;
 	char	*joined;
 	ssize_t	bytes_read;
 
@@ -54,7 +57,7 @@ char	*read_and_join(char *stash, int fd)
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		joined = join_buffer(joined, buffer, bytes_read);
 		if (!joined || bytes_read == 0)
-			break;
+			break ;
 	}
 	free(buffer);
 	return (joined);
@@ -104,24 +107,24 @@ void	extract_stash(const char *line, char *stash)
 	stash[i] = '\0';
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
-    static char stash[BUFFER_SIZE];
-    char *line;
-    char *next_line;
+	static char	stash[BUFFER_SIZE];
+	char		*line;
+	char		*next_line;
 
-    if (fd < 0 || BUFFER_SIZE <= 0)
-        return (NULL);
-    line = read_and_join(stash, fd);
-    if (!line)
-        return (NULL);
-    next_line = extract_line(line);
-    if (!next_line)
-    {
-        free(line);
-        return (NULL);
-    }
-    extract_stash(line, stash);
-    free(line);
-    return (next_line);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	line = read_and_join(stash, fd);
+	if (!line)
+		return (NULL);
+	next_line = extract_line(line);
+	if (!next_line)
+	{
+		free(line);
+		return (NULL);
+	}
+	extract_stash(line, stash);
+	free(line);
+	return (next_line);
 }

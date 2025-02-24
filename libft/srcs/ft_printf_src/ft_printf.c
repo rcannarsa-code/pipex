@@ -6,7 +6,7 @@
 /*   By: rcannars <rcannars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 15:02:51 by rcannars          #+#    #+#             */
-/*   Updated: 2025/01/06 10:40:02 by rcannars         ###   ########.fr       */
+/*   Updated: 2025/02/23 13:50:23 by rcannars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	ft_printf(const char *format, ...)
 	va_list	arguments;
 	int		length_print;
 	int		i;
+	int		chars_written;
 
 	length_print = 0;
 	i = 0;
@@ -58,8 +59,6 @@ int	ft_printf(const char *format, ...)
 	va_end(arguments);
 	return (length_print);
 } */
-
-
 static int	handle_format(va_list args, char specifier)
 {
 	int	chars_written;
@@ -76,7 +75,8 @@ static int	handle_format(va_list args, char specifier)
 	else if (specifier == 'u')
 		chars_written += ft_print_unsigned(va_arg(args, unsigned int));
 	else if (specifier == 'x' || specifier == 'X')
-		chars_written += ft_print_hex(va_arg(args, unsigned int), specifier == 'X');
+		chars_written += ft_print_hex(va_arg(args, unsigned int),
+				specifier == 'X');
 	else if (specifier == '%')
 		chars_written += ft_putchar('%');
 	return (chars_written);

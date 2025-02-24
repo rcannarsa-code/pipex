@@ -6,36 +6,11 @@
 /*   By: rcannars <rcannars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:00:28 by rcannars          #+#    #+#             */
-/*   Updated: 2025/02/21 14:14:45 by rcannars         ###   ########.fr       */
+/*   Updated: 2025/02/23 15:42:35 by rcannars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/pipex.h"
-
-void	close_pipes(int *pipes, int count)
-{
-	int		 i;
-
-	i = 0;
-	while (i < count)
-	{
-		close(pipes[i]);
-		i++;
-	}
-}
-
-void	free_pipex(t_pipex *pipex)
-{
-	if (pipex->cmd_paths)
-		free_array(pipex->cmd_paths);
-	if (pipex->cmd_args)
-		free_array(pipex->cmd_args);
-	if (pipex->pipe)
-		free(pipex->pipe);
-	if (pipex->pids)
-		free(pipex->pids);
-}
-
 
 void	error_exit(char *msg)
 {
@@ -54,7 +29,7 @@ void	free_array(char **arr)
 	free(arr);
 }
 
-/* void	cleanup_pipex(t_pipex *pipex)
+void	cleanup_pipex(t_pipex *pipex)
 {
 	int	i;
 
@@ -81,7 +56,7 @@ void	free_array(char **arr)
 	}
 	close(pipex->infile);
 	close(pipex->outfile);
-} */
+}
 
 void	handle_here_doc(t_pipex *pipex, char *limiter)
 {
